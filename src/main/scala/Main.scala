@@ -1,6 +1,7 @@
 import service.{DataService, DatabaseService}
 import ui.{Cli, Gui}
 
+
 object Main {
   // def main(args: Array[String]): Unit = {
   //   val countryPath = "src/main/resources/countries.csv"
@@ -32,8 +33,11 @@ object Main {
   DatabaseService.insertRunways(runways)
 // to use the database h2 set useDatabase = true
   val dataService = new DataService(useDatabase = true)
+
   //Cli.start(dataService)
   new Gui(dataService).main(Array.empty)
+
+
 
 }
 

@@ -24,20 +24,25 @@ class DataService(useDatabase: Boolean) {
   val runways: List[Runway] =
     if (!useDatabase) CsvParser.parseFile("src/main/resources/runways.csv")(Runway.from) else Nil
 
+  // Map of airports by country code
   private val airportsByCountry: Map[String, List[Airport]] =
     airports.groupBy(_.isoCountry.toLowerCase)
 
+  // Map of runways by airport ID
   private val runwaysByAirport: Map[Long, List[Runway]] =
     runways.groupBy(_.airportRef)
+  //
 
-
+  // ----------- Public methods -----------
+  // For M.2.1
   def findCountry(input: String): Option[Country] = {
     val lowered = input.toLowerCase
 
-    if (!useDatabase) {
+    if (!useDatabase) { //we use the scala list if useDatabase is false
       countries.find(c =>
         c.code.equalsIgnoreCase(lowered) || c.name.toLowerCase == lowered
       ).orElse {
+        // for C.1
         val fuzzyMatches = countries
           .map(c => (c, levenshtein(lowered, c.name.toLowerCase)))
           .filter(_._2 <= 3)
@@ -45,7 +50,7 @@ class DataService(useDatabase: Boolean) {
 
         fuzzyMatches.headOption.map(_._1)
       }
-    } else {
+    } else { // we do the sql request if useDatabase is true
       val stmt = connection.prepareStatement(
         "SELECT code, name FROM countries WHERE LOWER(code) = ? OR LOWER(name) = ?"
       )
@@ -180,7 +185,7 @@ class DataService(useDatabase: Boolean) {
 
   def top10MostCommonRunwayIdent(): List[(String, Int)] = {
     if (!useDatabase) {
-      runways.par // use of parallel
+      runways.par // use of parallel for C.6
         .map(_.leIdent)
         .filter(_.nonEmpty)
         .groupBy(identity _)
@@ -220,7 +225,7 @@ class DataService(useDatabase: Boolean) {
     val rs = stmt.executeQuery("SELECT code, name FROM countries")
     resultSetToList(rs, r => Country(r.getString("code"), r.getString("name")))
   }
-
+// For C.1
   private def levenshtein(a: String, b: String): Int = {
     val dp = Array.tabulate(a.length + 1, b.length + 1) { (i, j) =>
       if (i == 0) j

@@ -2,10 +2,11 @@ package service
 
 import java.sql.{Connection, DriverManager}
 import model._
-
+//for C.2
 object DatabaseService {
-  val connection: Connection = DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1")
+  val connection: Connection = DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1") // In-memory database
 
+  // init method to create tables
   def init(): Unit = {
     val stmt = connection.createStatement()
     stmt.execute("CREATE TABLE countries (code VARCHAR PRIMARY KEY, name VARCHAR)")
@@ -14,15 +15,16 @@ object DatabaseService {
     stmt.close()
   }
 
+  // insert methods to add data to tables
   def insertCountries(countries: List[Country]): Unit = {
     val prep = connection.prepareStatement("INSERT INTO countries VALUES (?, ?)")
     countries.foreach { c =>
-      prep.setString(1, c.code)
-      prep.setString(2, c.name)
+      prep.setString(1, c.code) 
+      prep.setString(2, c.name) 
       prep.addBatch()
     }
-    prep.executeBatch()
-    prep.close()
+    prep.executeBatch() //execute all the batched statements
+    prep.close() // close the prepared statement
   }
 
   def insertAirports(airports: List[Airport]): Unit = {

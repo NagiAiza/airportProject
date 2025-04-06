@@ -2,6 +2,7 @@ package model
 
 case class Airport(id: Long, ident: String, name: String, isoCountry: String)
 
+// For C.1
 object Airport {
   def from(line: String): Option[Airport] = {
     val parts = line.split(",", -1).map(_.trim.stripPrefix("\"").stripSuffix("\""))
@@ -9,13 +10,13 @@ object Airport {
       parts(0).toLongOption.map(id =>
         Airport(
           id,
-          parts(1),
-          parts(3),
+          parts(1), // ident
+          parts(3), // name
           parts(8) // iso_country
         )
       )
     } else {
-      println(s"[WARN] Failed to parse airport line: $line")
+      println(s"Failed to parse airport line: $line")
       None
     }
   }

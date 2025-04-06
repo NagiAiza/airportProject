@@ -12,6 +12,7 @@ import scalafx.geometry.Insets
 import service.DataService
 import scalafx.scene.control.TabPane.TabClosingPolicy
 
+// for C.3
 class Gui(dataService: DataService) extends JFXApp3 {
 
   override def start(): Unit = {
@@ -38,7 +39,7 @@ class Gui(dataService: DataService) extends JFXApp3 {
     searchButton.onAction = _ => {
       val input = inputField.text.value.trim
       queryResultArea.text = "Searching..."
-
+        //use of future for asynchronous processing C.5
       Future {
         val output = new StringBuilder
         dataService.findCountry(input) match {
@@ -81,7 +82,7 @@ class Gui(dataService: DataService) extends JFXApp3 {
       }
     }
 
-    // === Onglet Reports ===
+    // Tab Reports
     val reportChoice = new ComboBox[String](Seq(
       "Top 10 countries with most airports",
       "Top 10 countries with fewest airports",
@@ -145,14 +146,14 @@ class Gui(dataService: DataService) extends JFXApp3 {
       }
     }
 
-    // === Interface avec onglets ===
+    // Interface with tabs
     val tabPane = new TabPane {
       tabs = Seq(searchTab, reportTab)
       tabClosingPolicy = TabClosingPolicy.Unavailable
     }
 
     stage = new JFXApp3.PrimaryStage {
-      title = "Airport & Runway Explorer"
+      title = "Airport Project"
       scene = new Scene(700, 500) {
         root = tabPane
       }

@@ -8,7 +8,7 @@ import scala.io.StdIn.readLine
 object Cli {
 
   def start(dataService: DataService): Unit = {
-
+// For M.2.1
     def menu(): Unit = {
       println("\nMenu :")
       println("1. Query (search airports & runways by country)")
@@ -21,7 +21,7 @@ object Cli {
         case _   => println("Invalid input"); menu()
       }
     }
-
+// For M.2.1
     def query(): Unit = {
       val input = readLine("\nEnter country name or code: ").trim
       dataService.findCountry(input) match {
