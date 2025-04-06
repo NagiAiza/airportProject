@@ -1,5 +1,7 @@
 package service
 
+import scala.collection.parallel.CollectionConverters._
+
 import model._
 import parser.CsvParser
 
@@ -12,7 +14,7 @@ class DataService(useDatabase: Boolean) {
 
   val connection: Connection = DatabaseService.connection
 
-  // === Mode mémoire : chargement des données depuis les CSV ===
+  // chargement des données depuis les CSV
   val countries: List[Country] =
     if (!useDatabase) CsvParser.parseFile("src/main/resources/countries.csv")(Country.from) else Nil
 
@@ -28,7 +30,6 @@ class DataService(useDatabase: Boolean) {
   private val runwaysByAirport: Map[Long, List[Runway]] =
     runways.groupBy(_.airportRef)
 
-  // === Public methods ===
 
   def findCountry(input: String): Option[Country] = {
     val lowered = input.toLowerCase
@@ -179,11 +180,13 @@ class DataService(useDatabase: Boolean) {
 
   def top10MostCommonRunwayIdent(): List[(String, Int)] = {
     if (!useDatabase) {
-      runways.map(_.leIdent)
+      runways.par // use of parallel
+        .map(_.leIdent)
         .filter(_.nonEmpty)
-        .groupBy(identity)
-        .view.mapValues(_.size)
-        .toList.sortBy(-_._2)
+        .groupBy(identity _)
+        .map { case (id, list) => id -> list.size }
+        .toList
+        .sortBy(-_._2)
         .take(10)
     } else {
       val stmt = connection.createStatement()
@@ -201,7 +204,10 @@ class DataService(useDatabase: Boolean) {
     }
   }
 
-  // === Helpers ===
+
+
+
+  // function to Help 
 
   private def resultSetToList[T](rs: ResultSet, f: ResultSet => T): List[T] =
     Iterator.continually(rs)

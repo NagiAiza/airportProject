@@ -11,7 +11,7 @@ object Airport {
           id,
           parts(1),
           parts(3),
-          parts(8) // <-- iso_country
+          parts(8) // iso_country
         )
       )
     } else {

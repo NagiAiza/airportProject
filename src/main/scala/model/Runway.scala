@@ -13,7 +13,7 @@ object Runway {
         id,
         airportRef,
         parts(5),   // surface
-        parts(8)    // le_ident
+        parts(8)    // le_ident : runway latitude
       )
     } else {
       println(s"[WARN] Failed to parse runway line: $line")

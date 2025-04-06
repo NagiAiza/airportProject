@@ -45,6 +45,7 @@ val dependencies = Seq(
   "org.scalafx" %% "scalafx" % "16.0.0-R25",
   "com.h2database" % "h2" % "2.2.224",
   "org.scala-lang.modules" %% "scala-collection-compat" % "2.11.0",
+    "org.scala-lang.modules" %% "scala-parallel-collections" % "1.0.4",
   "org.scalameta" %% "munit" % "0.7.29" % Test
 ) ++ Seq("base", "graphics", "controls", "fxml", "media").map { m =>
   "org.openjfx" % s"javafx-$m" % javafxVersion classifier osName
