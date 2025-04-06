@@ -4,13 +4,20 @@ case class Runway(id: Long, airportRef: Long, surface: String, leIdent: String)
 
 object Runway {
   def from(line: String): Option[Runway] = {
-    line.split(",", -1).toList match {
-      case idStr :: airportRefStr :: _ :: _ :: _ :: _ :: _ :: _ :: _ :: _ :: _ :: _ :: _ :: _ :: surface :: _ :: _ :: _ :: _ :: _ :: _ :: _ :: _ :: leIdent :: _ =>
-        for {
-          id <- idStr.toLongOption
-          airportRef <- airportRefStr.toLongOption
-        } yield Runway(id, airportRef, surface.trim, leIdent.trim)
-      case _ => None
+    val parts = line.split(",", -1).map(_.trim.stripPrefix("\"").stripSuffix("\""))
+    if (parts.length >= 20) {
+      for {
+        id <- parts(0).toLongOption
+        airportRef <- parts(1).toLongOption
+      } yield Runway(
+        id,
+        airportRef,
+        parts(5),   // surface
+        parts(8)    // le_ident
+      )
+    } else {
+      println(s"[WARN] Failed to parse runway line: $line")
+      None
     }
   }
 }

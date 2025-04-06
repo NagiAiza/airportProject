@@ -33,7 +33,7 @@ object Cli {
             airports.foreach { airport =>
               println(s"- Airport: ${airport.name} (${airport.ident})")
               val runways = dataService.getRunways(airport.id)
-              runways.foreach(r => println(s"   • Runway: surface=${r.surface}, le_ident=${r.leIdent}"))
+              runways.foreach(r => println(s"   Runway: surface=${r.surface}, le_ident=${r.leIdent}"))
             }
           }
         case None => println("Country not found.")

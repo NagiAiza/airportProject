@@ -21,8 +21,13 @@ class DataService(countryPath: String, airportPath: String, runwayPath: String) 
 
   // ----------- Public methods -----------
 
-  def findCountry(input: String): Option[Country] =
-    countryMap.get(input.toLowerCase)
+def findCountry(input: String): Option[Country] = {
+  val lowered = input.toLowerCase
+  countries.find(_.code.toLowerCase == lowered)
+    .orElse(countries.find(_.name.toLowerCase == lowered))
+    .orElse(countries.find(_.name.toLowerCase.contains(lowered)))
+}
+
 
   def getAirports(country: Country): List[Airport] =
     airportsByCountry.getOrElse(country.code.toLowerCase, List())
@@ -40,8 +45,12 @@ class DataService(countryPath: String, airportPath: String, runwayPath: String) 
       .take(10)
 
   def top10CountriesWithLeastAirports(): List[(Country, Int)] =
-    top10CountriesWithMostAirports().reverse.take(10)
-
+  airports.groupBy(_.isoCountry).toList
+    .map { case (code, list) => (countries.find(_.code == code), list.size) }
+    .collect { case (Some(country), count) => (country, count) }
+    .sortBy(_._2)
+    .take(10)
+    
   def runwayTypesPerCountry(): Map[String, Set[String]] =
     airportsByCountry.map { case (countryCode, airportList) =>
       val runwayTypes = airportList.flatMap(a => runwaysByAirport.getOrElse(a.id, Nil).map(_.surface)).toSet
